@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_perfil"
+            android:icon="@drawable/icon_user"
+            android:title="Perfil" />
+        <item
+            android:id="@+id/nav_horario"
+            android:icon="@drawable/icon_horario"
+            android:title="Horario" />
+        <item
+            android:id="@+id/nav_registros"
+            android:icon="@drawable/icon_registro"
+            android:title="Registros" />
+    </group>
+
+    <item android:title="Tipo de usuario">
+        <menu>
+            <item
+                android:id="@+id/nav_tipo_usuario"
+                android:icon="@drawable/icon_tipo_usuario"
+                android:title="Usuario: " />
+        </menu>
+    </item>
+
+</menu>
