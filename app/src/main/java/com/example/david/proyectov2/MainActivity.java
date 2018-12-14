@@ -1,12 +1,10 @@
 package com.example.david.proyectov2;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,13 +14,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, Perfil.OnFragmentInteractionListener,
-        Horario.OnFragmentInteractionListener {
+        Horario.OnFragmentInteractionListener, Registros.OnFragmentInteractionListener, Trabajadores.OnFragmentInteractionListener {
 
     String id_trabajador = "";
+    String tipo_usuario = "";
+    Menu menu;
+    MenuItem menuItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +44,13 @@ public class MainActivity extends AppCompatActivity
 
         Intent i = getIntent();
         id_trabajador = i.getExtras().getCharSequence("id").toString();
+        tipo_usuario = i.getExtras().getCharSequence("tipo_usuario").toString();
+
+        if (tipo_usuario.equals("Administrador")) {
+            menu = navigationView.getMenu();
+            menuItem = menu.add(tipo_usuario).setTitle(tipo_usuario);
+            menuItem.setIcon(R.drawable.icon_tipo_usuario);
+        }
     }
 
     @Override
@@ -67,9 +76,11 @@ public class MainActivity extends AppCompatActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
+        Intent i;
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_cerrar_sesion) {
+            i = new Intent(getApplicationContext(), Login.class);
+            startActivity(i);
             return true;
         }
 
@@ -91,13 +102,16 @@ public class MainActivity extends AppCompatActivity
             fTransaccion = true;
             Toast.makeText(getApplicationContext(), "Perfil", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_horario) {
-            fragment = new Horario();
+            fragment = Horario.newInstance(id_trabajador, "");
             fTransaccion = true;
             Toast.makeText(getApplicationContext(), "Horario", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_registros) {
-
-        } else if (id == R.id.nav_tipo_usuario) {
-
+            fragment = Registros.newInstance(id_trabajador, "");
+            fTransaccion = true;
+            Toast.makeText(getApplicationContext(), "Registros", Toast.LENGTH_SHORT).show();
+        } else if (id == menuItem.getItemId()) {
+            fragment = new Trabajadores();
+            fTransaccion = true;
         }
 
         if(fTransaccion) {

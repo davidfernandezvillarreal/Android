@@ -23,19 +23,19 @@
                     android:layout_height="20dp"
                     android:src="@drawable/usrusr"
                     android:layout_gravity="center"/>
+
                 <EditText
                     android:id="@+id/cajaUser"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Usuario"
-                    android:text="TBJR001"
-                    android:textColorHint="#d9e5f3"
                     android:layout_marginLeft="15dp"
                     android:background="#00000000"
-                    android:letterSpacing="0.1"
-                    android:textSize="16dp"
+                    android:hint="Usuario"
                     android:inputType="text"
+                    android:letterSpacing="0.1"
                     android:textColor="#fff"
+                    android:textColorHint="#d9e5f3"
+                    android:textSize="16dp"
 
                     />
             </LinearLayout>
@@ -53,19 +53,19 @@
                     android:layout_height="20dp"
                     android:src="@drawable/pswd"
                     android:layout_gravity="center"/>
+
                 <EditText
                     android:id="@+id/cajaPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Contraseña"
-                    android:text="1234"
-                    android:textColorHint="#d9e5f3"
                     android:layout_marginLeft="15dp"
                     android:background="#00000000"
+                    android:hint="Contraseña"
                     android:inputType="textPassword"
                     android:letterSpacing="0.1"
-                    android:textSize="16dp"
-                    android:textColor="#fff"/>
+                    android:textColor="#fff"
+                    android:textColorHint="#d9e5f3"
+                    android:textSize="16dp" />
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"

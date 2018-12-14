@@ -2,11 +2,26 @@ package com.example.david.proyectov2;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.example.david.proyectov2.controlador.AnalizadorJSON;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
 
 
 /**
@@ -20,14 +35,21 @@ import android.view.ViewGroup;
 public class Horario extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM1 = "id";
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
+    private String id;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    ListView listViewHorario;
+    ArrayList<String> listaDatos = new ArrayList<>();
+    ArrayAdapter<String> adaptador;
+
+    TextView txtIdTrabajador;
+    TextView txtNombre;
 
     public Horario() {
         // Required empty public constructor
@@ -55,16 +77,86 @@ public class Horario extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+            id = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        new ConsultarHorario().execute(id);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_horario, container, false);
+        View view  = inflater.inflate(R.layout.fragment_horario, container, false);
+        listViewHorario = view.findViewById(R.id.listaHorario);
+        txtIdTrabajador = view.findViewById(R.id.txtIdTrabajador);
+        txtNombre = view.findViewById(R.id.txtNombre);
+        return view;
+    }
+
+    class ConsultarHorario extends AsyncTask<String, String, String> {
+
+        @Override
+        protected String doInBackground(String... datos) {
+            AnalizadorJSON analizadorJSON = new AnalizadorJSON();
+
+            //String url = "http://itsjsistemaentradasalida.000webhostapp.com/scripts_android/android_consultar_horario.php";
+            String url = "http://192.168.3.104/Practicas/ProyectoV2/scripts_android/android_consultar_horario.php";
+            String metodoEnvio = "POST";
+
+            String cadenaJSON = "";
+            try {
+                cadenaJSON = "{ \"id_trabajador\" : \"" + URLEncoder.encode(datos[0], "UTF-8") + "\" }";
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+            Log.i("cadenaHorario", cadenaJSON);
+
+            JSONObject objetoJSON = analizadorJSON.peticionHTTP(url, metodoEnvio, cadenaJSON);
+            try {
+                JSONArray jsonArrayEntrada = objetoJSON.getJSONArray("horarioEntrada");
+                JSONArray jsonArraySalida = objetoJSON.getJSONArray("horarioSalida");
+
+                String lunes = "Lunes: \n" + jsonArrayEntrada.getJSONObject(0).getString("lunes") +
+                        " - " + jsonArraySalida.getJSONObject(0).getString("lunes");
+                listaDatos.add(lunes);
+                String martes = "Martes: \n" + jsonArrayEntrada.getJSONObject(0).getString("martes") +
+                        " - " + jsonArraySalida.getJSONObject(0).getString("martes");
+                listaDatos.add(martes);
+                String miercoles = "Miercoles: \n" + jsonArrayEntrada.getJSONObject(0).getString("miercoles") +
+                        " - " + jsonArraySalida.getJSONObject(0).getString("miercoles");
+                listaDatos.add(miercoles);
+                String jueves = "Jueves: \n" + jsonArrayEntrada.getJSONObject(0).getString("jueves") +
+                        " - " + jsonArraySalida.getJSONObject(0).getString("jueves");
+                listaDatos.add(jueves);
+                String viernes = "Viernes: \n" + jsonArrayEntrada.getJSONObject(0).getString("viernes") +
+                        " - " + jsonArraySalida.getJSONObject(0).getString("viernes");
+                listaDatos.add(viernes);
+                String sabado = "Sabado: \n" + jsonArrayEntrada.getJSONObject(0).getString("sabado") +
+                        " - " + jsonArraySalida.getJSONObject(0).getString("sabado");
+                listaDatos.add(sabado);
+
+                adaptador = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, listaDatos);
+
+                publishProgress(jsonArrayEntrada.getJSONObject(0).getString("id"),
+                        jsonArrayEntrada.getJSONObject(0).getString("nombre") + " " +
+                        jsonArrayEntrada.getJSONObject(0).getString("primer_ap") + " " +
+                        jsonArrayEntrada.getJSONObject(0).getString("segundo_ap"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            super.onProgressUpdate(values);
+            txtIdTrabajador.setText(values[0]);
+            txtNombre.setText(values[1]);
+            listViewHorario.setAdapter(adaptador);
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event

@@ -9,7 +9,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.david.proyectov2.controlador.AnalizadorJSON;
@@ -20,6 +22,7 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 
 
 /**
@@ -40,22 +43,11 @@ public class Perfil extends Fragment {
     private String id;
     private String mParam2;
 
-    EditText cajaIdTrabajador;
-    EditText cajaNombre;
-    EditText cajaPrimerAp;
-    EditText cajaSegundoAp;
-    EditText cajaSexo;
-    EditText cajaFechaNac;
-    EditText cajaCalle;
-    EditText cajaNumero;
-    EditText cajaColonia;
-    EditText cajaCodigoPostal;
-    EditText cajaCiudad;
-    EditText cajaPuesto;
-    EditText cajaArea;
-    EditText cajaSubarea;
-
     private OnFragmentInteractionListener mListener;
+
+    ListView listViewPerfil;
+    ArrayList<String> listaDatos = new ArrayList<String>();
+    ArrayAdapter<String> adaptador;
 
     public Perfil() {
         // Required empty public constructor
@@ -90,13 +82,24 @@ public class Perfil extends Fragment {
         new ConsultarPerfil().execute(id);
     }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_perfil, container, false);
+        listViewPerfil = view.findViewById(R.id.listaPerfil);
+        return view;
+    }
+
     class ConsultarPerfil extends AsyncTask<String, String, String> {
 
         @Override
         protected String doInBackground(String... datos) {
             AnalizadorJSON analizadorJSON = new AnalizadorJSON();
 
-            String url = "http://192.168.1.7/Practicas/Proyecto/scripts_android/android_consultar_perfil.php";
+            //String url = "http://itsjsistemaentradasalida.000webhostapp.com/scripts_android/android_consultar_perfil.php";
+            String url = "http://192.168.3.104/Practicas/ProyectoV2/scripts_android/android_consultar_perfil.php";
+
             String metodoEnvio = "POST";
 
             String cadenaJSON = "";
@@ -112,21 +115,24 @@ public class Perfil extends Fragment {
             try {
                 JSONArray jsonArray = objetoJSON.getJSONArray("perfil");
 
-                publishProgress(jsonArray.getJSONObject(0).getString("id"),
-                        jsonArray.getJSONObject(0).getString("nombre"),
-                        jsonArray.getJSONObject(0).getString("primer_ap"),
-                        jsonArray.getJSONObject(0).getString("segundo_ap"),
-                        jsonArray.getJSONObject(0).getString("sexo"),
-                        jsonArray.getJSONObject(0).getString("fecha_nac"),
-                        jsonArray.getJSONObject(0).getString("calle"),
-                        jsonArray.getJSONObject(0).getString("numero"),
-                        jsonArray.getJSONObject(0).getString("colonia"),
-                        jsonArray.getJSONObject(0).getString("codigo_postal"),
-                        jsonArray.getJSONObject(0).getString("ciudad"),
-                        jsonArray.getJSONObject(0).getString("puesto"),
-                        jsonArray.getJSONObject(0).getString("area"),
-                        jsonArray.getJSONObject(0).getString("subarea"));
+                listaDatos.add(jsonArray.getJSONObject(0).getString("id"));
+                listaDatos.add(jsonArray.getJSONObject(0).getString("nombre"));
+                listaDatos.add(jsonArray.getJSONObject(0).getString("primer_ap"));
+                listaDatos.add(jsonArray.getJSONObject(0).getString("segundo_ap"));
+                listaDatos.add(jsonArray.getJSONObject(0).getString("sexo"));
+                listaDatos.add(jsonArray.getJSONObject(0).getString("fecha_nac"));
+                listaDatos.add(jsonArray.getJSONObject(0).getString("calle"));
+                listaDatos.add(jsonArray.getJSONObject(0).getString("numero"));
+                listaDatos.add(jsonArray.getJSONObject(0).getString("colonia"));
+                listaDatos.add(jsonArray.getJSONObject(0).getString("codigo_postal"));
+                listaDatos.add(jsonArray.getJSONObject(0).getString("ciudad"));
+                listaDatos.add(jsonArray.getJSONObject(0).getString("puesto"));
+                listaDatos.add(jsonArray.getJSONObject(0).getString("area"));
+                listaDatos.add(jsonArray.getJSONObject(0).getString("subarea"));
 
+                adaptador = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, listaDatos);
+
+                publishProgress();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -137,45 +143,8 @@ public class Perfil extends Fragment {
         @Override
         protected void onProgressUpdate(String... values) {
             super.onProgressUpdate(values);
-            cajaIdTrabajador.setText(values[0]);
-            cajaNombre.setText(values[1]);
-            cajaPrimerAp.setText(values[2]);
-            cajaSegundoAp.setText(values[3]);
-            cajaSexo.setText(values[4]);
-            cajaFechaNac.setText(values[5]);
-            cajaCalle.setText(values[6]);
-            cajaNumero.setText(values[7]);
-            cajaColonia.setText(values[8]);
-            cajaCodigoPostal.setText(values[9]);
-            cajaCiudad.setText(values[10]);
-            cajaPuesto.setText(values[11]);
-            cajaArea.setText(values[12]);
-            cajaSubarea.setText(values[13]);
+            listViewPerfil.setAdapter(adaptador);
         }
-    }
-
-
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_perfil, container, false);
-        cajaIdTrabajador = view.findViewById(R.id.cajaIdTrabajador);
-        cajaNombre = view.findViewById(R.id.cajaNombre);
-        cajaPrimerAp = view.findViewById(R.id.cajaPrimerAp);
-        cajaSegundoAp = view.findViewById(R.id.cajaSegundoAp);
-        cajaSexo = view.findViewById(R.id.cajaSexo);
-        cajaFechaNac = view.findViewById(R.id.cajaFechaNac);
-        cajaCalle = view.findViewById(R.id.cajaCalle);
-        cajaNumero = view.findViewById(R.id.cajaNumero);
-        cajaColonia = view.findViewById(R.id.cajaColonia);
-        cajaCodigoPostal = view.findViewById(R.id.cajaCodigoPostal);
-        cajaCiudad = view.findViewById(R.id.cajaCiudad);
-        cajaPuesto = view.findViewById(R.id.cajaPuesto);
-        cajaArea = view.findViewById(R.id.cajaArea);
-        cajaSubarea = view.findViewById(R.id.cajaSubarea);
-        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

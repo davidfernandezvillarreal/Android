@@ -20,10 +20,7 @@
 
     <item android:title="Tipo de usuario">
         <menu>
-            <item
-                android:id="@+id/nav_tipo_usuario"
-                android:icon="@drawable/icon_tipo_usuario"
-                android:title="Usuario: " />
+
         </menu>
     </item>
 

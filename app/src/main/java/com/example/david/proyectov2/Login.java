@@ -42,20 +42,6 @@ public class Login extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 new ProcesarLogin().execute(cajaUser.getText().toString(), cajaPassword.getText().toString());
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                if (usuario.equals(cajaUser.getText().toString()) && contraseña.equals(cajaPassword.getText().toString())) {
-                    Toast.makeText(getApplicationContext(), "Usuario: " + usuario + " - Contraseña: " + contraseña, Toast.LENGTH_SHORT).show();
-
-                    Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                    i.putExtra("id", cajaUser.getText().toString());
-                    startActivityForResult(i, 1);
-                } else {
-                    Toast.makeText(getApplicationContext(), "El usuario o contraseña son incorrectos", Toast.LENGTH_SHORT).show();
-                }
             }
         });
     }
@@ -69,7 +55,6 @@ public class Login extends AppCompatActivity {
          */
         if ((resultCode==RESULT_OK) && (requestCode==1)) {
             String cadena = data.getExtras().getCharSequence("sesionCerrada").toString();
-            Toast.makeText(this, cadena, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -79,7 +64,8 @@ public class Login extends AppCompatActivity {
         protected String doInBackground(String... datos) {
             AnalizadorJSON analizadorJSON = new AnalizadorJSON();
 
-            String url = "http://192.168.1.7/Practicas/Proyecto/scripts_android/android_procesar_login.php";
+            //String url = "http://itsjsistemaentradasalida.000webhostapp.com/scripts_android/android_procesar_login.php";
+            String url = "http://192.168.3.104/Practicas/ProyectoV2/scripts_android/android_procesar_login.php";
             String metodoEnvio = "POST";
 
             String cadenaJSON = "";
@@ -90,19 +76,33 @@ public class Login extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            Log.i("cadena", cadenaJSON);
-
             JSONObject objetoJSON = analizadorJSON.peticionHTTP(url, metodoEnvio, cadenaJSON);
             try {
                 JSONArray jsonArray = objetoJSON.getJSONArray("usuario");
                 usuario = jsonArray.getJSONObject(0).getString("user");
                 contraseña = jsonArray.getJSONObject(0).getString("password");
 
+                publishProgress(usuario, contraseña, jsonArray.optJSONObject(0).getString("tipo_usuario"));
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
             return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            super.onProgressUpdate(values);
+
+            if (values[0].equals(cajaUser.getText().toString()) && values[1].equals(cajaPassword.getText().toString())) {
+                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                i.putExtra("id", cajaUser.getText().toString());
+                i.putExtra("tipo_usuario", values[2]);
+                startActivityForResult(i, 1);
+            } else {
+                Toast.makeText(getApplicationContext(), "El usuario o contraseña son incorrectos", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }
